@@ -35,7 +35,9 @@ func newStaticAssets(selfHostKubelet bool) Assets {
 
 func newDynamicAssets(conf Config) Assets {
 	return Assets{
+		mustCreateAssetFromTemplate(AssetPathControllerManager, internal.ControllerManagerTemplate, conf),
 		mustCreateAssetFromTemplate(AssetPathAPIServer, internal.APIServerTemplate, conf),
+		mustCreateAssetFromTemplate(AssetPathKubelet, internal.KubeletTemplate, conf),
 	}
 }
 

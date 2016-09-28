@@ -51,6 +51,9 @@ spec:
         - --kubeconfig=/etc/kubernetes/kubeconfig
         - --require-kubeconfig
         - --lock-file=/var/run/lock/kubelet.lock
+        {{ with .CloudProvider -}}
+        - --cloud-provider={{ . }}
+        {{ end -}}
         env:
           - name: MY_POD_IP
             valueFrom:
@@ -148,6 +151,9 @@ spec:
         - --tls-private-key-file=/etc/kubernetes/secrets/apiserver.key
         - --service-account-key-file=/etc/kubernetes/secrets/service-account.pub
         - --client-ca-file=/etc/kubernetes/secrets/ca.crt
+        {{ with .CloudProvider -}}
+        - --cloud-provider={{ . }}
+        {{ end -}}
         env:
           - name: MY_POD_IP
             valueFrom:
@@ -194,12 +200,18 @@ spec:
         - --root-ca-file=/etc/kubernetes/secrets/ca.crt
         - --service-account-private-key-file=/etc/kubernetes/secrets/service-account.key
         - --leader-elect=true
+        {{ with .CloudProvider -}}
+        - --cloud-provider={{ . }}
+        {{ end -}}
         volumeMounts:
         - name: secrets
           mountPath: /etc/kubernetes/secrets
           readOnly: true
         - name: ssl-host
           mountPath: /etc/ssl/certs
+          readOnly: true
+        - name: resolv-conf
+          mountPath: /etc/resolv.conf
           readOnly: true
       volumes:
       - name: secrets
@@ -208,6 +220,9 @@ spec:
       - name: ssl-host
         hostPath:
           path: /usr/share/ca-certificates
+      - name: resolv-conf
+        hostPath:
+          path: /etc/resolv.conf
 `)
 	SchedulerTemplate = []byte(`apiVersion: extensions/v1beta1
 kind: Deployment
