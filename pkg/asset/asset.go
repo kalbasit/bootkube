@@ -45,6 +45,7 @@ type Config struct {
 	AltNames        *tlsutil.AltNames
 	SelfHostKubelet bool
 	CloudProvider   string
+	EtcdPrefix      string
 }
 
 // NewDefaultAssets returns a list of default assets, optionally

@@ -154,6 +154,9 @@ spec:
         {{ with .CloudProvider -}}
         - --cloud-provider={{ . }}
         {{ end -}}
+        {{ with .EtcdPrefix -}}
+        - --etcd-prefix={{ . }}
+        {{ end -}}
         env:
           - name: MY_POD_IP
             valueFrom:
