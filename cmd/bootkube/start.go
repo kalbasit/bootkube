@@ -25,12 +25,14 @@ var (
 	startOpts struct {
 		assetDir   string
 		etcdServer string
+		etcdPrefix string
 	}
 )
 
 func init() {
 	cmdRoot.AddCommand(cmdStart)
 	cmdStart.Flags().StringVar(&startOpts.etcdServer, "etcd-server", "http://127.0.0.1:2379", "Single etcd node to use during bootkube bootstrap process.")
+	cmdStart.Flags().StringVar(&startOpts.etcdPrefix, "etcd-prefix", "", "The prefix for all resource paths in etcd")
 	cmdStart.Flags().StringVar(&startOpts.assetDir, "asset-dir", "", "Path to the cluster asset directory. Expected layout genereted by the `bootkube render` command.")
 }
 
@@ -43,6 +45,7 @@ func runCmdStart(cmd *cobra.Command, args []string) error {
 	bk, err := bootkube.NewBootkube(bootkube.Config{
 		AssetDir:   startOpts.assetDir,
 		EtcdServer: etcdServer,
+		EtcdPrefix: startOpts.etcdPrefix,
 	})
 
 	if err != nil {

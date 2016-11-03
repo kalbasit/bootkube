@@ -32,6 +32,7 @@ var requiredPods = []string{
 type Config struct {
 	AssetDir   string
 	EtcdServer *url.URL
+	EtcdPrefix string
 }
 
 type bootkube struct {
@@ -45,7 +46,7 @@ func NewBootkube(config Config) (*bootkube, error) {
 	apiServer := apiserver.NewAPIServer()
 	fs := pflag.NewFlagSet("apiserver", pflag.ExitOnError)
 	apiServer.AddFlags(fs)
-	fs.Parse([]string{
+	args := []string{
 		"--bind-address=0.0.0.0",
 		"--secure-port=443",
 		"--insecure-port=8080",
@@ -58,8 +59,11 @@ func NewBootkube(config Config) (*bootkube, error) {
 		"--service-account-key-file=" + filepath.Join(config.AssetDir, asset.AssetPathServiceAccountPubKey),
 		"--admission-control=NamespaceLifecycle,ServiceAccount",
 		"--runtime-config=api/all=true",
-	})
-
+	}
+	if config.EtcdPrefix != "" {
+		args = append(args, "--etcd-prefix="+config.EtcdPrefix)
+	}
+	fs.Parse(args)
 	cmServer := controller.NewCMServer()
 	fs = pflag.NewFlagSet("controllermanager", pflag.ExitOnError)
 	cmServer.AddFlags(fs)
